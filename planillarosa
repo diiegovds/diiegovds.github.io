@@ -1,0 +1,919 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planilla Rosa — Pereyra 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --o: #FF6200;
+  --o2: #FF8C38;
+  --o3: #FFB270;
+  --o-glow: rgba(255,98,0,0.35);
+  --dark: #080400;
+  --dark2: #0F0800;
+  --mid: #1A1000;
+  --white: #FFFCF7;
+  --muted: rgba(255,252,247,0.45);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--dark);
+  color: var(--white);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CURSOR */
+#cursor {
+  position: fixed; z-index: 9999; pointer-events: none;
+  width: 10px; height: 10px;
+  background: var(--o);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  transition: width 0.3s, height 0.3s, background 0.3s;
+  mix-blend-mode: screen;
+}
+#cursor-ring {
+  position: fixed; z-index: 9998; pointer-events: none;
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(255,98,0,0.5);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  transition: all 0.12s ease-out;
+}
+
+/* NOISE OVERLAY */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.5rem 4rem;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.4s, backdrop-filter 0.4s, padding 0.4s;
+}
+nav.scrolled {
+  background: rgba(8,4,0,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,98,0,0.12);
+  padding: 1rem 4rem;
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--o);
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.nav-logo span { color: var(--white); }
+.nav-links { display: flex; gap: 2.5rem; }
+.nav-links a {
+  color: var(--muted); text-decoration: none;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 1px; background: var(--o);
+  transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { width: 100%; }
+.nav-cta {
+  background: var(--o); color: var(--dark) !important;
+  padding: 0.5rem 1.4rem; border-radius: 100px;
+  font-weight: 700 !important; font-size: 0.78rem !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.nav-cta:hover { transform: scale(1.04); box-shadow: 0 0 24px var(--o-glow); }
+.nav-cta::after { display: none !important; }
+
+/* HERO */
+#hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  text-align: center;
+  padding: 8rem 2rem 4rem;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+.orb1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(255,98,0,0.18) 0%, transparent 70%);
+  top: -100px; left: 50%; transform: translateX(-50%);
+  animation: orbFloat 8s ease-in-out infinite;
+}
+.orb2 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(255,140,56,0.12) 0%, transparent 70%);
+  bottom: 20%; right: 10%;
+  animation: orbFloat 12s ease-in-out infinite reverse;
+}
+@keyframes orbFloat {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-30px); }
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(255,98,0,0.1); border: 1px solid rgba(255,98,0,0.25);
+  padding: 0.35rem 1rem; border-radius: 100px;
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--o2); margin-bottom: 2rem;
+  opacity: 0; animation: fadeUp 0.8s 0.3s forwards;
+}
+.eyebrow-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--o);
+  animation: dotPulse 2s infinite;
+}
+@keyframes dotPulse { 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(4.5rem, 12vw, 10rem);
+  line-height: 0.92;
+  letter-spacing: -2px;
+  opacity: 0; animation: fadeUp 0.9s 0.5s forwards;
+}
+.hero-title .line2 {
+  display: block;
+  background: linear-gradient(90deg, var(--o) 0%, var(--o2) 50%, var(--o3) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  max-width: 500px; margin: 2rem auto 0;
+  font-size: 1.1rem; font-weight: 300; color: var(--muted); line-height: 1.7;
+  opacity: 0; animation: fadeUp 0.9s 0.7s forwards;
+}
+
+.hero-cta-group {
+  display: flex; align-items: center; gap: 1rem; margin-top: 3rem; justify-content: center;
+  opacity: 0; animation: fadeUp 0.9s 0.9s forwards;
+}
+.btn-primary {
+  background: var(--o); color: var(--dark);
+  padding: 0.85rem 2.5rem; border-radius: 100px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+  letter-spacing: 0.5px; text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.3s;
+  box-shadow: 0 0 40px rgba(255,98,0,0.3);
+}
+.btn-primary:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 12px 50px rgba(255,98,0,0.45); }
+.btn-ghost {
+  color: var(--white); padding: 0.85rem 2rem; border-radius: 100px;
+  font-size: 0.9rem; font-weight: 500; text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--o); color: var(--o); }
+
+.hero-scroll {
+  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  opacity: 0; animation: fadeUp 1s 1.4s forwards;
+}
+.scroll-line {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, var(--o), transparent);
+  animation: scrollDrop 2s ease-in-out infinite;
+}
+@keyframes scrollDrop { 0%,100%{ transform: scaleY(1); opacity:1; } 50%{ transform: scaleY(0.6); opacity:0.5; } }
+.scroll-text { font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(30px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+/* MARQUEE */
+.marquee-section {
+  overflow: hidden; padding: 1.5rem 0;
+  border-top: 1px solid rgba(255,98,0,0.1);
+  border-bottom: 1px solid rgba(255,98,0,0.1);
+  background: rgba(255,98,0,0.04);
+}
+.marquee-track {
+  display: flex; gap: 0; white-space: nowrap;
+  animation: marquee 20s linear infinite;
+}
+.marquee-item {
+  display: inline-flex; align-items: center; gap: 1.5rem;
+  padding: 0 2rem;
+  font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+}
+.marquee-sep { color: var(--o); font-size: 1rem; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* SECTIONS SHARED */
+.section { padding: 8rem 2rem; position: relative; }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s, transform 0.8s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* LEMA */
+#lema {
+  text-align: center;
+  padding: 10rem 2rem;
+}
+.lema-word {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  line-height: 1.1;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s, transform 0.6s;
+  display: block;
+}
+.lema-word.visible { opacity: 1; transform: translateY(0); }
+.lema-word.accent { color: var(--o); }
+.lema-word.small { font-size: clamp(1rem, 2.5vw, 1.5rem); color: var(--muted); font-weight: 300; font-family: 'DM Sans', sans-serif; margin-top: 1.5rem; }
+
+/* PROPUESTAS */
+#propuestas { background: var(--dark2); }
+
+.proposals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5px;
+  background: rgba(255,98,0,0.1);
+  border: 1.5px solid rgba(255,98,0,0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 4rem;
+}
+.proposal-card {
+  background: var(--dark2);
+  padding: 2.5rem 2rem;
+  position: relative; overflow: hidden;
+  transition: background 0.4s;
+  cursor: default;
+}
+.proposal-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,98,0,0.06) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.4s;
+}
+.proposal-card:hover { background: rgba(255,98,0,0.05); }
+.proposal-card:hover::before { opacity: 1; }
+.proposal-num {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,98,0,0.4); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.proposal-num::after { content: ''; flex:1; height:1px; background: rgba(255,98,0,0.15); }
+.proposal-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
+.proposal-title {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem;
+  margin-bottom: 0.8rem; line-height: 1.3;
+}
+.proposal-body {
+  font-size: 0.83rem; color: var(--muted); line-height: 1.7;
+}
+.proposal-tag {
+  display: inline-block; margin-top: 1.2rem;
+  background: rgba(255,98,0,0.1); border: 1px solid rgba(255,98,0,0.2);
+  color: var(--o2); font-size: 0.65rem; font-weight: 600;
+  padding: 0.25rem 0.7rem; border-radius: 100px; letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.section-label {
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--o); margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.section-label::before { content: ''; width: 24px; height: 1px; background: var(--o); }
+.section-title {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.05; letter-spacing: -1px;
+}
+
+/* EQUIPO */
+#equipo { overflow: hidden; }
+
+.team-intro {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6rem;
+  align-items: center; margin-bottom: 6rem;
+}
+.team-intro-stat { text-align: right; }
+.stat-number {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 7rem; line-height: 1;
+  background: linear-gradient(135deg, var(--o), var(--o3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+}
+.member-card {
+  position: relative; overflow: hidden;
+  border-radius: 16px;
+  aspect-ratio: 3/4;
+  background: var(--mid);
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.member-card:hover { transform: translateY(-8px) scale(1.02); }
+.member-photo {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top center;
+  display: block;
+  filter: grayscale(15%) contrast(1.05);
+  transition: filter 0.4s, transform 0.4s;
+}
+.member-card:hover .member-photo { filter: grayscale(0%) contrast(1.1); transform: scale(1.05); }
+.member-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(8,4,0,0.95) 0%, rgba(8,4,0,0.3) 50%, transparent 100%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 1rem 0.8rem;
+  opacity: 0; transition: opacity 0.3s;
+}
+.member-card:hover .member-overlay { opacity: 1; }
+.member-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.72rem; line-height: 1.2; }
+.member-role { font-size: 0.6rem; color: var(--o2); margin-top: 0.2rem; letter-spacing: 0.5px; }
+.member-badge {
+  position: absolute; top: 0.6rem; left: 0.6rem;
+  background: var(--o); color: var(--dark);
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 0.55rem; padding: 0.2rem 0.5rem; border-radius: 100px;
+  text-transform: uppercase; letter-spacing: 0.8px;
+}
+.member-card.pres .member-badge { background: var(--white); }
+
+.member-photo-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+  background: linear-gradient(135deg, var(--mid) 0%, rgba(255,98,0,0.08) 100%);
+}
+
+/* CAMPAIGN TIMELINE — new phase-based layout */
+#activaciones { background: linear-gradient(180deg, var(--dark) 0%, var(--dark2) 100%); }
+
+.phases-grid {
+  margin-top: 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5px;
+  background: rgba(255,98,0,0.1);
+  border: 1.5px solid rgba(255,98,0,0.1);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.phase-card {
+  background: var(--dark2);
+  padding: 2.2rem 2rem;
+  position: relative; overflow: hidden;
+  transition: background 0.4s;
+}
+.phase-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,98,0,0.05) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.4s;
+}
+.phase-card:hover { background: rgba(255,98,0,0.04); }
+.phase-card:hover::before { opacity: 1; }
+.phase-card.full-width { grid-column: 1 / -1; }
+
+.phase-header {
+  display: flex; align-items: flex-start; gap: 1.2rem; margin-bottom: 1.2rem;
+}
+.phase-num-badge {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  background: rgba(255,98,0,0.12);
+  border: 1px solid rgba(255,98,0,0.25);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 0.7rem; color: var(--o);
+}
+.phase-meta { flex: 1; }
+.phase-dates {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--o); margin-bottom: 0.3rem;
+}
+.phase-title {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; line-height: 1.25;
+}
+.phase-body {
+  font-size: 0.82rem; color: var(--muted); line-height: 1.7;
+  margin-bottom: 1rem;
+}
+.phase-items {
+  list-style: none; display: flex; flex-direction: column; gap: 0.35rem;
+}
+.phase-items li {
+  display: flex; align-items: baseline; gap: 0.5rem;
+  font-size: 0.8rem; color: var(--muted); line-height: 1.5;
+}
+.phase-items li::before {
+  content: '→'; color: var(--o); font-size: 0.7rem; flex-shrink: 0;
+}
+.phase-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+.chip {
+  background: rgba(255,98,0,0.08); border: 1px solid rgba(255,98,0,0.2);
+  color: var(--o2); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.5px;
+  padding: 0.2rem 0.6rem; border-radius: 100px; text-transform: uppercase;
+}
+.phase-card.highlight {
+  background: linear-gradient(135deg, rgba(255,98,0,0.1) 0%, rgba(255,98,0,0.03) 100%);
+  border-left: 2px solid var(--o);
+}
+
+/* VOTO CTA */
+#voto {
+  text-align: center; padding: 12rem 2rem;
+  position: relative; overflow: hidden;
+}
+#voto::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,98,0,0.12) 0%, transparent 70%);
+}
+.voto-date {
+  display: inline-block;
+  font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: clamp(4rem, 14vw, 12rem);
+  line-height: 1; letter-spacing: -3px;
+  background: linear-gradient(90deg, rgba(255,98,0,0.2) 0%, var(--o) 40%, var(--o3) 70%, rgba(255,98,0,0.2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+@keyframes shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+.voto-label { font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem; }
+.voto-text { font-size: 1.2rem; color: var(--muted); font-weight: 300; margin-top: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; }
+.voto-cta { margin-top: 3rem; }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid rgba(255,98,0,0.1);
+  padding: 3rem 4rem;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.75rem; color: var(--muted);
+}
+.footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--o); letter-spacing: 2px; font-size: 1rem; }
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--o); }
+
+/* RESPONSIVE */
+@media(max-width:900px) {
+  nav { padding: 1.2rem 1.5rem; }
+  nav.scrolled { padding: 0.8rem 1.5rem; }
+  .nav-links { display: none; }
+  .proposals-grid { grid-template-columns: 1fr; }
+  .phases-grid { grid-template-columns: 1fr; }
+  .phase-card.full-width { grid-column: 1; }
+  .team-grid { grid-template-columns: repeat(4, 1fr); }
+  .team-intro { grid-template-columns: 1fr; gap: 2rem; }
+  .team-intro-stat { text-align: left; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+}
+@media(max-width:600px) {
+  .team-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-logo">🍊 <span>Planilla</span> Naranja</div>
+  <div class="nav-links">
+    <a href="#propuestas">Propuestas</a>
+    <a href="#equipo">Equipo</a>
+    <a href="#activaciones">Campaña</a>
+    <a href="https://www.instagram.com/planilla_naranja_lag/" target="_blank" class="nav-cta">Síguenos en Instagram</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+
+  <div class="hero-eyebrow">
+    <span class="eyebrow-dot"></span>
+    FETECMI Torreón · Gestión AGO26–MAY27
+  </div>
+
+  <h1 class="hero-title">
+    Tu voz,<br>
+    <span class="line2">nuestra misión.</span>
+  </h1>
+
+  <p class="hero-sub">
+    Somos la Planilla Naranja. Compromiso, Acción y Resultados para la comunidad Tecmilenio Torreón.
+  </p>
+
+  <div class="hero-cta-group">
+    <a href="#propuestas" class="btn-primary">Ver propuestas</a>
+    <a href="#equipo" class="btn-ghost">Conocer al equipo →</a>
+  </div>
+
+  <div class="hero-scroll">
+    <span class="scroll-text">Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-item">Compromiso <span class="marquee-sep">◆</span> Acción <span class="marquee-sep">◆</span> Resultados <span class="marquee-sep">◆</span> Tu Voz <span class="marquee-sep">◆</span> Nuestra Misión <span class="marquee-sep">◆</span> FETECMI Torreón <span class="marquee-sep">◆</span> Planilla Naranja <span class="marquee-sep">◆</span> 2026 <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Compromiso <span class="marquee-sep">◆</span> Acción <span class="marquee-sep">◆</span> Resultados <span class="marquee-sep">◆</span> Tu Voz <span class="marquee-sep">◆</span> Nuestra Misión <span class="marquee-sep">◆</span> FETECMI Torreón <span class="marquee-sep">◆</span> Planilla Naranja <span class="marquee-sep">◆</span> 2026 <span class="marquee-sep">◆</span></div>
+  </div>
+</div>
+
+<!-- LEMA -->
+<section id="lema" class="section">
+  <div class="lema-word" data-delay="0">Compromiso.</div>
+  <div class="lema-word accent" data-delay="150">Acción.</div>
+  <div class="lema-word" data-delay="300">Resultados.</div>
+  <div class="lema-word small" data-delay="500">Eso es lo que la comunidad Tecmilenio merece — y lo que vamos a entregar.</div>
+</section>
+
+<!-- PROPUESTAS -->
+<section id="propuestas" class="section">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">Lo que vamos a hacer</div>
+      <h2 class="section-title">Propuestas que<br>sí se van a cumplir.</h2>
+    </div>
+
+    <div class="proposals-grid reveal" style="transition-delay:0.2s">
+
+      <div class="proposal-card">
+        <div class="proposal-num">01</div>
+        <span class="proposal-icon">🛋️</span>
+        <div class="proposal-title">Zona Lounge al Aire Libre</div>
+        <div class="proposal-body">Presentar una petición formal a las autoridades de Tecmilenio para la instalación de mobiliario exterior — puffs, sillones, sombra. La FETECMI lleva la iniciativa con firmas de la comunidad como respaldo. <em style="color:var(--o3)">Esto depende de que Tecmilenio lo apruebe — pero nos comprometemos a pelear por ello.</em></div>
+        <span class="proposal-tag">Infraestructura</span>
+      </div>
+
+      <div class="proposal-card">
+        <div class="proposal-num">02</div>
+        <span class="proposal-icon">🎮</span>
+        <div class="proposal-title">Liga de E-Sports Inter-Carrera</div>
+        <div class="proposal-body">Torneo oficial entre carreras de los juegos más jugados del campus — Valorant, EA FC, Mario Kart. Brackets, transmisiones en vivo desde el campus y premios reales.</div>
+        <span class="proposal-tag">E-Sports</span>
+      </div>
+
+      <div class="proposal-card">
+        <div class="proposal-num">03</div>
+        <span class="proposal-icon">🎤</span>
+        <div class="proposal-title">Open Mic & Feria de Talentos</div>
+        <div class="proposal-body">Un evento semestral en la explanada donde músicos, bailarines, comediantes y artistas del campus tienen escenario real. Producción, luces, y difusión para que llegue la gente.</div>
+        <span class="proposal-tag">Arte y Cultura</span>
+      </div>
+
+      <div class="proposal-card">
+        <div class="proposal-num">04</div>
+        <span class="proposal-icon">🛍️</span>
+        <div class="proposal-title">Bazar Naranja Mensual</div>
+        <div class="proposal-body">Una vez al mes, stands en el campus para que emprendedores estudiantiles vendan. Aplicación abierta a todos los alumnos. La FETECMI organiza, tú vendes.</div>
+        <span class="proposal-tag">Impacto Social</span>
+      </div>
+
+      <div class="proposal-card">
+        <div class="proposal-num">05</div>
+        <span class="proposal-icon">🧘</span>
+        <div class="proposal-title">Semana de Alivio en Evaluaciones</div>
+        <div class="proposal-body">Durante la semana de evaluaciones — ya sean exámenes, entrega de proyectos, certificaciones o cualquier modalidad — montamos zonas de descompresión: coloring books, fruta, música, pláticas con psicólogos del campus. Aplica para todos: modelo MAPS y modelo tradicional.</div>
+        <span class="proposal-tag">Bienestar</span>
+      </div>
+
+      <div class="proposal-card">
+        <div class="proposal-num">06</div>
+        <span class="proposal-icon">⚡</span>
+        <div class="proposal-title">Cargadores y Kit de Emergencia</div>
+        <div class="proposal-body">Sistema de préstamo en la FETECMI: cargadores universales, calculadoras, USB, audífonos. Olvidaste algo importante hoy — lo tienes. Sin tramitología, sin costo.</div>
+        <span class="proposal-tag">Impacto Social</span>
+      </div>
+
+      <div class="proposal-card">
+        <div class="proposal-num">07</div>
+        <span class="proposal-icon">🏃</span>
+        <div class="proposal-title">Torneo Deportivo Relámpago Inter-Carrera</div>
+        <div class="proposal-body">Un torneo express de fútbol rápido o básquetbol en las canchas del campus, organizado entre carreras. Equipos de 5, formato eliminación directa, una tarde y listos. La FETECMI coordina la logística, el campus pone la cancha, los alumnos ponen la energía. Sin inscripción previa complicada — solo ganas de jugar.</div>
+        <span class="proposal-tag">Athletics</span>
+      </div>
+
+      <div class="proposal-card">
+        <div class="proposal-num">08</div>
+        <span class="proposal-icon">🌳</span>
+        <div class="proposal-title">Torreón Florece</div>
+        <div class="proposal-body">Porque nuestra responsabilidad no termina en las puertas del campus. Organizamos una jornada de reforestación urbana en un parque o área verde de Torreón — el equipo y quien quiera sumarse, plantando árboles lado a lado en la ciudad que todos compartimos. Sin obligaciones, sin cuotas. Solo acción real con impacto real.</div>
+        <span class="proposal-tag">Impacto Social</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPO -->
+<section id="equipo" class="section">
+  <div class="section-inner">
+    <div class="team-intro reveal">
+      <div>
+        <div class="section-label">El equipo</div>
+        <h2 class="section-title">7 personas.<br>Una sola misión.</h2>
+        <p style="color:var(--muted);font-size:0.9rem;line-height:1.8;margin-top:1.5rem;max-width:420px">Somos estudiantes de Tecmilenio Torreón. Conocemos el campus, sus problemas, y sus posibilidades. No venimos a hacer campaña — venimos a trabajar.</p>
+      </div>
+      <div class="team-intro-stat">
+        <div class="stat-number">7</div>
+        <div class="stat-label">integrantes · 3 carreras distintas · 1 objetivo</div>
+      </div>
+    </div>
+
+    <div class="team-grid reveal" style="transition-delay:0.15s">
+
+      <div class="member-card pres">
+        <img src="/mnt/user-data/uploads/WhatsApp_Image_2026-03-05_at_9_25_26_PM.jpeg" class="member-photo" alt="Paulina Salcedo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-placeholder" style="display:none">👑</div>
+        <div class="member-badge">Presidenta</div>
+        <div class="member-overlay">
+          <div class="member-name">Paulina Salcedo Serrano</div>
+          <div class="member-role">Presidenta FETECMI</div>
+        </div>
+      </div>
+
+      <div class="member-card">
+        <img src="/mnt/user-data/uploads/WhatsApp_Image_2026-03-05_at_9_25_28_PM__1_.jpeg" class="member-photo" alt="Dante Gutierrez" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-placeholder" style="display:none">🎨</div>
+        <div class="member-badge">Arte</div>
+        <div class="member-overlay">
+          <div class="member-name">Dante Gutiérrez Villa</div>
+          <div class="member-role">Arte y Cultura</div>
+        </div>
+      </div>
+
+      <div class="member-card">
+        <img src="/mnt/user-data/uploads/WhatsApp_Image_2026-03-05_at_9_25_28_PM__2_.jpeg" class="member-photo" alt="Josue Perez" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-placeholder" style="display:none">🏃</div>
+        <div class="member-badge">Athletics</div>
+        <div class="member-overlay">
+          <div class="member-name">Josue A. Pérez Guerra</div>
+          <div class="member-role">Athletics</div>
+        </div>
+      </div>
+
+      <div class="member-card">
+        <img src="/mnt/user-data/uploads/WhatsApp_Image_2026-03-05_at_9_25_27_PM.jpeg" class="member-photo" alt="Jorge Cornejo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-placeholder" style="display:none">🎮</div>
+        <div class="member-badge">E-Sports</div>
+        <div class="member-overlay">
+          <div class="member-name">Jorge Cornejo Murra</div>
+          <div class="member-role">E-Sports</div>
+        </div>
+      </div>
+
+      <div class="member-card">
+        <img src="/mnt/user-data/uploads/WhatsApp_Image_2026-03-05_at_9_25_28_PM__3_.jpeg" class="member-photo" alt="Emiliano Valdez" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-placeholder" style="display:none">🌱</div>
+        <div class="member-badge">Social</div>
+        <div class="member-overlay">
+          <div class="member-name">Emiliano Valdez</div>
+          <div class="member-role">Impacto Social</div>
+        </div>
+      </div>
+
+      <div class="member-card">
+        <img src="/mnt/user-data/uploads/WhatsApp_Image_2026-03-05_at_9_25_28_PM__4_.jpeg" class="member-photo" alt="Sofia Tinajero" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-placeholder" style="display:none">💰</div>
+        <div class="member-badge">Finanzas</div>
+        <div class="member-overlay">
+          <div class="member-name">Sofía Tinajero Morales</div>
+          <div class="member-role">Finanzas</div>
+        </div>
+      </div>
+
+      <div class="member-card">
+        <img src="/mnt/user-data/uploads/WhatsApp_Image_2026-03-05_at_9_23_17_PM.jpeg" class="member-photo" alt="Abril Miranda" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="member-photo-placeholder" style="display:none">📱</div>
+        <div class="member-badge">Comunicación</div>
+        <div class="member-overlay">
+          <div class="member-name">Abril Miranda Villa Márquez</div>
+          <div class="member-role">Comunicación & Redes</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CAMPAÑA / ACTIVACIONES -->
+<section id="activaciones" class="section">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">Campaña 18 Mar – 10 Abr</div>
+      <h2 class="section-title">Cómo vamos a<br>ganar esto.</h2>
+      <p style="color:var(--muted);font-size:0.9rem;line-height:1.8;margin-top:1.5rem;max-width:560px">Tres semanas de campaña en el campus, una pausa de Semana Santa para preparar el cierre, y cinco días finales que Torreón no va a olvidar.</p>
+    </div>
+
+    <div class="phases-grid reveal" style="transition-delay:0.2s">
+
+      <!-- FASE 1 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num-badge">1</div>
+          <div class="phase-meta">
+            <div class="phase-dates">18 – 21 Marzo · Arrancamos</div>
+            <div class="phase-title">El campus empieza a vernos 🍊</div>
+          </div>
+        </div>
+        <div class="phase-body">Primera semana de campaña visible. Nos presentamos ante la comunidad con presencia real en el campus y arrancamos la dinámica que va a acompañar cada día de clases hasta el final.</div>
+        <ul class="phase-items">
+          <li>Presentación del equipo en Instagram (@planilla_naranja_lag)</li>
+          <li>Dinámica diaria de chocolates en Instagram — arranca hoy y no para hasta el 10 de abril</li>
+          <li>Trivia interactiva en pasillos: preguntas en vivo, premios naranjas al instante</li>
+          <li>Conversaciones directas con estudiantes sobre las propuestas</li>
+        </ul>
+        <div class="phase-chips">
+          <span class="chip">Instagram</span>
+          <span class="chip">Chocolates diarios</span>
+          <span class="chip">Trivia interactiva</span>
+        </div>
+      </div>
+
+      <!-- FASE 2 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num-badge">2</div>
+          <div class="phase-meta">
+            <div class="phase-dates">23 – 27 Marzo · Subimos el volumen</div>
+            <div class="phase-title">Ya nos conocen — ahora nos recuerdan</div>
+          </div>
+        </div>
+        <div class="phase-body">Segunda semana de campaña: reforzamos la identidad naranja con detalles que la gente encuentra sin buscarlos, y seguimos presentes en cada rincón del campus.</div>
+        <ul class="phase-items">
+          <li>Dinámica diaria de chocolates en Instagram — continúa todos los días de clases</li>
+          <li>Reparto de stickers con el logo de la planilla</li>
+          <li>Decoración de baños: espejos, mensajes motivacionales y detalle de bienestar para mujeres</li>
+          <li>Marco de fotos naranja activo en la explanada</li>
+          <li>Carteles grandes con propuestas en corredores y edificios</li>
+        </ul>
+        <div class="phase-chips">
+          <span class="chip">Chocolates diarios</span>
+          <span class="chip">Stickers</span>
+          <span class="chip">Baños decorados</span>
+          <span class="chip">Marco de fotos</span>
+          <span class="chip">Carteles</span>
+        </div>
+      </div>
+
+      <!-- SEMANA SANTA — banner informativo -->
+      <div class="phase-card full-width" style="background: rgba(255,98,0,0.03); border: 1px dashed rgba(255,98,0,0.2); text-align:center; padding: 1.8rem 2rem;">
+        <div style="font-size:1.5rem; margin-bottom:0.5rem">🌴</div>
+        <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:var(--muted); margin-bottom:0.3rem">Semana Santa · 30 Mar – 3 Abr · Receso escolar</div>
+        <div style="font-size:0.78rem; color:rgba(255,252,247,0.3)">El equipo descansa y termina de preparar el cierre más grande de la campaña. Lo que viene no tiene precedente.</div>
+      </div>
+
+      <!-- FASE 3 — DÍA DE PLANILLAS Y VOTACIONES, full width -->
+      <div class="phase-card highlight full-width">
+        <div class="phase-header">
+          <div class="phase-num-badge">3</div>
+          <div class="phase-meta">
+            <div class="phase-dates">6 – 10 Abril · Día de Planillas y Votaciones</div>
+            <div class="phase-title">Stand oficial, urnas abiertas y el campus entero naranja 🏁🍊</div>
+          </div>
+        </div>
+        <div class="phase-body">La semana definitiva. Stand oficial en la explanada del campus en Profesional, equipo completo presente todos los días, y las urnas abiertas para que la comunidad decida. Es el cierre más grande que podemos hacer — y lo vamos a hacer bien.</div>
+        <ul class="phase-items">
+          <li>Stand oficial con decoración completa: globos naranjas, lona de fondo y props de la planilla</li>
+          <li>Botarga naranja recorriendo el campus todo el día</li>
+          <li>Reparto de naranjas preparadas con tajín y churros para toda la comunidad</li>
+          <li>Gafas decoradas, pintura de cara naranja y serpentina en espuma</li>
+          <li>Bengalas de humo naranja para el arranque del día más importante</li>
+          <li>Equipo con micrófonos y bocina en la explanada presentando propuestas en vivo</li>
+          <li>Dinámica diaria de chocolates en Instagram — los últimos y los más esperados</li>
+          <li>🎁 Dinámica Sorpresa — una actividad creativa con premios que nadie se espera. Pendiente de revelar.</li>
+        </ul>
+        <div class="phase-chips">
+          <span class="chip">Stand explanada</span>
+          <span class="chip">Botarga</span>
+          <span class="chip">Naranjas + churros</span>
+          <span class="chip">Bengalas</span>
+          <span class="chip">Bocina + micrófonos</span>
+          <span class="chip">🎁 Sorpresa</span>
+          <span class="chip">Votaciones abiertas</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- VOTO CTA -->
+<section id="voto">
+  <div style="position:relative;z-index:2">
+    <div class="voto-label">Días de votaciones</div>
+    <div class="voto-date">6–10 Abr</div>
+    <p class="voto-text">Tu voto elige quién representa a toda la comunidad Tecmilenio Torreón. Hazlo valer.</p>
+    <div class="voto-cta">
+      <a href="https://www.instagram.com/planilla_naranja_lag/" target="_blank" class="btn-primary">Seguirnos en Instagram →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">🍊 PLANILLA NARANJA</div>
+  <div class="footer-links">
+    <a href="https://www.instagram.com/planilla_naranja_lag/" target="_blank">@planilla_naranja_lag</a>
+    <a href="#propuestas">Propuestas</a>
+    <a href="#equipo">Equipo</a>
+  </div>
+  <div style="font-size:0.7rem;color:rgba(255,252,247,0.25)">FETECMI · Torreón · 2026</div>
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+setInterval(()=>{ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; },16);
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ cursor.style.width='18px'; cursor.style.height='18px'; ring.style.width='50px'; ring.style.height='50px'; });
+  el.addEventListener('mouseleave',()=>{ cursor.style.width='10px'; cursor.style.height='10px'; ring.style.width='36px'; ring.style.height='36px'; });
+});
+
+// Nav scroll
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll',()=>{ nav.classList.toggle('scrolled', window.scrollY > 60); });
+
+// Reveal on scroll
+const revealEls = document.querySelectorAll('.reveal');
+const ro = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.12});
+revealEls.forEach(el=>ro.observe(el));
+
+// Lema words
+const lemaWords = document.querySelectorAll('.lema-word');
+const lo = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      lemaWords.forEach((w,i)=>{
+        setTimeout(()=>w.classList.add('visible'), parseInt(w.dataset.delay||0));
+      });
+    }
+  });
+},{threshold:0.3});
+if(lemaWords.length) lo.observe(lemaWords[0].parentElement);
+
+// Parallax orbs
+window.addEventListener('scroll',()=>{
+  const y = window.scrollY;
+  document.querySelector('.orb1').style.transform = `translateX(-50%) translateY(${y*0.08}px)`;
+});
+</script>
+</body>
+</html>
